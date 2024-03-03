@@ -22,6 +22,10 @@ jobs:
       with:
           hugo-version: '0.110.0'
           extended: true
+    - name: Install autoprefixer
+      run:  npm install -D --save autoprefixer
+    - name: Install postcss-cli
+      run:  npm install -D --save postcss-cli
     - name: Build Site
       run: hugo -b "https://products.aspose.app/" --cleanDestinationDir --minify --templateMetrics --templateMetricsHints --enableGitInfo
     - name: Deploy Site to S3
