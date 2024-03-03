@@ -27,9 +27,9 @@ jobs:
     - name: Install postcss-cli
       run:  npm install -D --save postcss-cli
     - name: Build Site
-      run: hugo -b "https://products.aspose.app/" --cleanDestinationDir --minify --templateMetrics --templateMetricsHints --enableGitInfo
+      run: hugo --cleanDestinationDir --minify --templateMetrics --templateMetricsHints --enableGitInfo
     - name: Deploy Site to S3
-      run: hugo deploy --maxDeletes 0 --target "${{ github.event.inputs.environment }}" --invalidateCDN --force
+      run: hugo deploy --maxDeletes 0 --target "${{ github.event.inputs.environment }}" --force
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS }}
