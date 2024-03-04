@@ -1,8 +1,13 @@
 name: BarCode
 
 on:
-  repository_dispatch:
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Build environment'
+        type: environment
+        default: staging
+        required: true
 
 jobs:
   deploy:
