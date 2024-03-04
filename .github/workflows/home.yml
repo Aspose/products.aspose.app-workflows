@@ -27,7 +27,7 @@ jobs:
     - name: Install postcss-cli
       run:  npm install -D --save postcss-cli
     - name: Build Site
-      run: hugo --cleanDestinationDir -c "content/" -b "product.aspose.app" --minify --templateMetrics --templateMetricsHints --enableGitInfo
+      run: hugo --cleanDestinationDir -c "content/" --minify --templateMetrics --templateMetricsHints --enableGitInfo
     - name: Deploy Site to S3
       run: hugo deploy --target "${{ github.event.inputs.environment }}" --force
       env:
