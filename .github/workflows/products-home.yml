@@ -1,8 +1,13 @@
 name: Home
 
 on:
-  repository_dispatch:
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Build environment'
+        type: environment
+        default: staging
+        required: true
 
 jobs:
   deploy:
@@ -11,7 +16,7 @@ jobs:
     - name: Checkout theme repo
       uses: actions/checkout@main
       with:
-          repository: Aspose/products.aspose.com
+          repository: Aspose/products.aspose.app
           token: ${{ secrets.REPO_TOKEN }}
           fetch-depth: 0 
     - name: Setup Hugo
