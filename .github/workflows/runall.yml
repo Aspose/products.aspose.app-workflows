@@ -23,7 +23,10 @@ jobs:
 
     - name: Install Dependencies
       run: npm install
-
+    - name: Debug
+      run: |
+        pwd
+        ls -R
     - name: Run Dispatch Script
       run: node .github/scripts/dispatch-all.js
       env:
