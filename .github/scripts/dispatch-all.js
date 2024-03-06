@@ -8,7 +8,7 @@ for (const workflow of workflows) {
   const response = await octokit.request('POST /repos/Aspose/products.aspose.app-workflows/actions/workflows/{workflow}/dispatches', {
     owner: 'Aspose',
     repo: 'products.aspose.app-workflows',
-    workflow: 'RunAll',
+    workflow: 'workflowName',
     ref: 'main', 
     inputs: {
       environment: process.env.ENVIRONMENT
