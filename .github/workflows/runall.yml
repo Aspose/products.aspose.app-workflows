@@ -23,12 +23,8 @@ jobs:
 
     - name: Install Dependencies
       run: npm install
-    - name: Debug
-      run: |
-        pwd
-        ls -R
     - name: Run Dispatch Script
-      run: node .github/scripts/dispatch-all.js
+      run: node ./.github/scripts/dispatch-all.js
       env:
         ENVIRONMENT: ${{ github.event.inputs.environment }}
-      working-directory: .github/scripts
+      working-directory: /home/runner/work/products.aspose.app-workflows/products.aspose.app-workflows
