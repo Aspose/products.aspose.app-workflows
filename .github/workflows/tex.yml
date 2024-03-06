@@ -1,4 +1,4 @@
-name: Aspose.BarCode
+name: Aspose.TeX
 on:
   workflow_dispatch:
     inputs:
@@ -26,10 +26,10 @@ jobs:
       run:  npm install -D --save autoprefixer
     - name: Install postcss-cli
       run:  npm install -D --save postcss-cli
-    - name: Build Aspose.BarCode
-      run: hugo --config "configs/common.toml","configs/barcode.toml" -b "https://products.aspose.app/barcode" --cleanDestinationDir --minify --disableKinds 404
-    - name: Deploy Aspose.BarCode to S3
-      run: hugo deploy --config "configs/barcode.toml" --maxDeletes=0 --target "${{ github.event.inputs.environment }}" --force
+    - name: Build Aspose.TeX
+      run: hugo --config "configs/common.toml","configs/3d.toml" -b "https://products.aspose.app/3d" --cleanDestinationDir --minify --disableKinds 404
+    - name: Deploy Aspose.TeX to S3
+      run: hugo deploy --config "configs/3d.toml" --maxDeletes=0 --target "${{ github.event.inputs.environment }}" --force
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS }}
