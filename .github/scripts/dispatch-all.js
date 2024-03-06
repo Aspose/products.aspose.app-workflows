@@ -1,14 +1,15 @@
 const fs = require('fs');
+const octokit = require('@octokit/rest')(); // Ensure you have the octokit library installed
 
 async function dispatchAllWorkflows() {
-  const workflowsDirectory = '../workflows'; // Change to the directory where your workflows are stored
+  const workflowsDirectory = './.github/workflows'; // Adjust the path to your workflows directory
   const workflows = fs.readdirSync(workflowsDirectory).filter(file => file.endsWith('.yml'));
 
   for (const workflow of workflows) {
     const workflowName = workflow.replace('.yml', '');
-    const response = await octokit.request('POST /repos/{owner}/{repo}/actions/workflows/{workflow}/dispatches', {
-      owner: process.env.GITHUB_REPOSITORY.split("/")[0],
-      repo: process.env.GITHUB_REPOSITORY.split("/")[1],
+    const response = await octokit.request('POST /repos/Aspose/products.aspose.app-workflows/actions/workflows/{workflow}/dispatches', {
+      owner: 'Aspose',
+      repo: 'products.aspose.app-workflows',
       workflow: workflowName,
       ref: 'main', // Replace with your branch name
       inputs: {
