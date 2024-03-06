@@ -1,4 +1,4 @@
-name: Words
+name: Aspose.Words
 
 on:
   workflow_dispatch:
@@ -28,9 +28,9 @@ jobs:
       run:  npm install -D --save autoprefixer
     - name: Install postcss-cli
       run:  npm install -D --save postcss-cli
-    - name: Build Home
+    - name: Build Aspose.Words
       run: hugo --config "configs/common.toml","configs/words.toml" -b "https://products.aspose.app/words" --cleanDestinationDir --minify --disableKinds 404
-    - name: Deploy Home to S3
+    - name: Deploy Aspose.Words to S3
       run: hugo deploy --config "configs/words.toml" --maxDeletes=0 --target "${{ github.event.inputs.environment }}" --force
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY }}
