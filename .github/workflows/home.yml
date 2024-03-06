@@ -1,4 +1,5 @@
-name: Static-Site
+name: Home
+
 on:
   workflow_dispatch:
     inputs:
@@ -7,6 +8,7 @@ on:
         type: environment
         default: staging
         required: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -26,10 +28,10 @@ jobs:
       run:  npm install -D --save autoprefixer
     - name: Install postcss-cli
       run:  npm install -D --save postcss-cli
-    - name: Build Site
-      run: hugo --cleanDestinationDir -c "content/" --minify --templateMetrics --templateMetricsHints --enableGitInfo
-    - name: Deploy Site to S3
-      run: hugo deploy --target "${{ github.event.inputs.environment }}" --force
+    - name: Build Home
+      run: hugo --config "configs/common.toml","configs/home.toml" -b "https://products.aspose.app/" --cleanDestinationDir --minify --disableKinds 404
+    - name: Deploy Home to S3
+      run: hugo deploy --config "configs/home.toml" --maxDeletes=-1 --target "${{ github.event.inputs.environment }}" --force
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS }}
