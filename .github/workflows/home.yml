@@ -1,4 +1,4 @@
-name: Home
+name: Build-Site
 
 on:
   workflow_dispatch:
@@ -28,10 +28,10 @@ jobs:
       run:  npm install -D --save autoprefixer
     - name: Install postcss-cli
       run:  npm install -D --save postcss-cli
-    - name: Build Home
-      run: hugo --config "configs/common.toml","configs/home.toml" -b "https://products.aspose.app/" --cleanDestinationDir --minify --disableKinds 404
-    - name: Deploy Home to S3
-      run: hugo deploy --config "configs/home.toml" --maxDeletes=0 --target "${{ github.event.inputs.environment }}" --force
+    - name: Build
+      run: hugo -b "https://products.aspose.app/" --cleanDestinationDir --minify --disableKinds 404
+    - name: Deploy to S3
+      run: hugo deploy --maxDeletes=-1 --target "${{ github.event.inputs.environment }}" --force
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS }}
