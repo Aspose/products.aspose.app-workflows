@@ -28,12 +28,25 @@ jobs:
         run: npm install -D --save autoprefixer
       - name: Install postcss-cli
         run: npm install -D --save postcss-cli
+      - name: Determine Base URL
+        id: base-url
+        run: |
+          if [ "${{ github.event.inputs.environment }}" = "production" ]; then
+            echo "::set-output name=url::https://products.aspose.app"
+          else
+            echo "::set-output name=url::https://products-qa.aspose.app"
+          fi
       - name: Build
-        run: hugo -b "https://products.aspose.app/" --cleanDestinationDir --minify --disableKinds 404 
+        run: hugo -b "${{ steps.base-url.outputs.url }}" --cleanDestinationDir --minify --disableKinds 404 
       - name: Deploy to S3
         run: hugo deploy --maxDeletes=-1 --target "${{ github.event.inputs.environment }}" --force 
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS }}
       - name: Invalidate Cache
-        run: ${{ secrets.INVALIDATE_CACHE }}
+        run: |
+          if [ "${{ github.event.inputs.environment }}" = "production" ]; then
+            curl -X POST ${{ secrets.INVALIDATE_CACHE_PROD }} > /dev/null 2>&1
+          else
+            curl -X POST ${{ secrets.INVALIDATE_CACHE_QA }} > /dev/null 2>&1
+          fi
