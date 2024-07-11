@@ -31,12 +31,7 @@ jobs:
     - name: Build
       run: hugo -b "https://products.aspose.app/" --cleanDestinationDir --minify --disableKinds 404 
     - name: Deploy to S3
-      run: hugo deploy --maxDeletes=-1 --target "${{ github.event.inputs.environment }}" --force 
-    - name: Invalidate CloudFront Cache
-        env:
-          COMMAND_TO_EXECUTE: ${{ secrets.INVALIDATE_CACHE }}
-        run: |
-          $COMMAND_TO_EXECUTE
+      run: hugo deploy --maxDeletes=-1 --target "${{ github.event.inputs.environment }}" --force --invalidateCDN --verbose
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS }}
