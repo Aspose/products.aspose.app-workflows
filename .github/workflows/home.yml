@@ -13,25 +13,27 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout theme repo
-      uses: actions/checkout@main
-      with:
+      - name: Checkout theme repo
+        uses: actions/checkout@main
+        with:
           repository: Aspose/products.aspose.app
           token: ${{ secrets.REPO_TOKEN }}
           fetch-depth: 0 
-    - name: Setup Hugo
-      uses: peaceiris/actions-hugo@v2
-      with:
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
           hugo-version: '0.110.0'
           extended: true
-    - name: Install autoprefixer
-      run:  npm install -D --save autoprefixer
-    - name: Install postcss-cli
-      run:  npm install -D --save postcss-cli
-    - name: Build
-      run: hugo -b "https://products.aspose.app/" --cleanDestinationDir --minify --disableKinds 404 
-    - name: Deploy to S3
-      run: hugo deploy --maxDeletes=-1 --target "${{ github.event.inputs.environment }}" --force --invalidateCDN --verbose
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS }}
+      - name: Install autoprefixer
+        run: npm install -D --save autoprefixer
+      - name: Install postcss-cli
+        run: npm install -D --save postcss-cli
+      - name: Build
+        run: hugo -b "https://products.aspose.app/" --cleanDestinationDir --minify --disableKinds 404 
+      - name: Deploy to S3
+        run: hugo deploy --maxDeletes=-1 --target "${{ github.event.inputs.environment }}" --force 
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS }}
+      - name: Invalidate Cache
+        run: ${{ secrets.INVALIDATE_CACHE }}
