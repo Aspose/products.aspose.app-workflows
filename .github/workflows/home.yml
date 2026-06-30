@@ -38,15 +38,118 @@ jobs:
           fi
       - name: Build
         run: hugo -b "${{ steps.base-url.outputs.url }}" --cleanDestinationDir --minify --disableKinds 404 
-      - name: Deploy to S3
-        run: hugo deploy --maxDeletes=-1 --target "${{ github.event.inputs.environment }}" --force 
+      - name: Deploy to Ceph (staging)
+        if: ${{ github.event.inputs.environment == 'staging' }}
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS }}
-      - name: Invalidate Cache
+          AWS_ACCESS_KEY_ID: ${{ secrets.CEPH_QA_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.CEPH_QA_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
         run: |
-          if [ "${{ github.event.inputs.environment }}" = "production" ]; then
-            curl -X POST ${{ secrets.INVALIDATE_CACHE_PROD }} > /dev/null 2>&1
+          echo "Attempting Hugo deploy to Ceph..."
+          if hugo deploy --maxDeletes=-1 --target "staging" --force; then
+            echo "Hugo deploy succeeded"
           else
-            curl -X POST ${{ secrets.INVALIDATE_CACHE_QA }} > /dev/null 2>&1
+            echo "Hugo deploy failed, falling back to AWS CLI..."
+
+            BUCKET="products-qa-aspose-app"
+            ENDPOINT="https://s3-qa.dynabic.com"
+            REGION="us-east-1"
+
+            aws configure set s3.multipart_threshold 100MB
+
+            aws s3 sync public/ "s3://$BUCKET/" \
+              --endpoint-url "$ENDPOINT" \
+              --region "$REGION" \
+              --delete
+
+            aws s3 cp public/ "s3://$BUCKET/" \
+              --endpoint-url "$ENDPOINT" \
+              --region "$REGION" \
+              --recursive \
+              --exclude "*" \
+              --include "*.xml" \
+              --cache-control "max-age=3600, public" \
+              --metadata-directive REPLACE
+
+            aws s3 cp public/ "s3://$BUCKET/" \
+              --endpoint-url "$ENDPOINT" \
+              --region "$REGION" \
+              --recursive \
+              --exclude "*" \
+              --include "*.js" \
+              --include "*.css" \
+              --include "*.svg" \
+              --cache-control "max-age=22880000, no-transform, public" \
+              --metadata-directive REPLACE
+
+            aws s3 cp public/ "s3://$BUCKET/" \
+              --endpoint-url "$ENDPOINT" \
+              --region "$REGION" \
+              --recursive \
+              --exclude "*" \
+              --include "*.png" \
+              --include "*.jpg" \
+              --include "*.ico" \
+              --cache-control "max-age=22880000, no-transform, public" \
+              --metadata-directive REPLACE
+
+            echo "AWS CLI deployment completed"
+          fi
+
+      - name: Deploy to Ceph (production)
+        if: ${{ github.event.inputs.environment == 'production' }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.CEPH_PRODUCTION_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.CEPH_PRODUCTION_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+        run: |
+          echo "Attempting Hugo deploy to Ceph..."
+          if hugo deploy --maxDeletes=-1 --target "production" --force; then
+            echo "Hugo deploy succeeded"
+          else
+            echo "Hugo deploy failed, falling back to AWS CLI..."
+
+            BUCKET="products-aspose-app"
+            ENDPOINT="https://s3.dynabic.com"
+            REGION="us-east-1"
+
+            aws configure set s3.multipart_threshold 100MB
+
+            aws s3 sync public/ "s3://$BUCKET/" \
+              --endpoint-url "$ENDPOINT" \
+              --region "$REGION" \
+              --delete
+
+            aws s3 cp public/ "s3://$BUCKET/" \
+              --endpoint-url "$ENDPOINT" \
+              --region "$REGION" \
+              --recursive \
+              --exclude "*" \
+              --include "*.xml" \
+              --cache-control "max-age=3600, public" \
+              --metadata-directive REPLACE
+
+            aws s3 cp public/ "s3://$BUCKET/" \
+              --endpoint-url "$ENDPOINT" \
+              --region "$REGION" \
+              --recursive \
+              --exclude "*" \
+              --include "*.js" \
+              --include "*.css" \
+              --include "*.svg" \
+              --cache-control "max-age=22880000, no-transform, public" \
+              --metadata-directive REPLACE
+
+            aws s3 cp public/ "s3://$BUCKET/" \
+              --endpoint-url "$ENDPOINT" \
+              --region "$REGION" \
+              --recursive \
+              --exclude "*" \
+              --include "*.png" \
+              --include "*.jpg" \
+              --include "*.ico" \
+              --cache-control "max-age=22880000, no-transform, public" \
+              --metadata-directive REPLACE
+
+            echo "AWS CLI deployment completed"
           fi
